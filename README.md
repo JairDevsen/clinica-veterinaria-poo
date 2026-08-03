@@ -7,10 +7,11 @@ Este repositório contém a implementação da primeira etapa do projeto prátic
 ## Contexto Acadêmico
 
 - **Instituição:** Universidade Federal do Agreste de Pernambuco
-- **Curso:** Bacharelado em Ciência da Computação
+- **Curso:** Bacharelado em Ciências da Computação
 - **Disciplina:** Programação Orientada a Objetos
 - **Professor:** Igor Medeiros Vanderlei
 - **Período:** II - Turno Noite
+- **Alunos:** Jair Claudino de Melo Filho, Ariel da Silva, Heitor Quitino Brasil Marques e Fábio Alex da Silva Miranda
 - **Etapa:** Semana 1 — Modelagem, Persistência e Arquitetura em Camadas
 
 ---
