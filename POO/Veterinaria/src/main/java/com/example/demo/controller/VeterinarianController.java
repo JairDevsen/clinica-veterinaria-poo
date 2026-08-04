@@ -41,4 +41,11 @@ public class VeterinarianController {
         facade.deleteVeterinarianById(id);
         return ResponseEntity.noContent().build();
     }
+    
+    @PutMapping("/{id}")
+    public ResponseEntity<VeterinarianDTO> updateVeterinarian(@PathVariable Long id, @RequestBody VeterinarianDTO veterinarianDTO) {
+        VeterinarianDTO updatedVeterinarian = facade.updateVeterinarian(id, veterinarianDTO);
+        return ResponseEntity.ok(updatedVeterinarian);
+    }
+
 }
