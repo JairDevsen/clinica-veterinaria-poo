@@ -1,7 +1,8 @@
 package com.example.demo.service;
 
-import com.example.demo.dto.PetOwnerDTO;
-import com.example.demo.mapper.PetOwnerMapper;
+import com.example.demo.comunicacao.conversor.PetOwnerConversor;
+import com.example.demo.comunicacao.dto.request.PetOwnerDTORequest;
+import com.example.demo.comunicacao.dto.response.PetOwnerDTOResponse;
 import com.example.demo.model.PetOwner;
 import com.example.demo.repository.PetOwnerRepository;
 import org.springframework.stereotype.Service;
@@ -14,23 +15,25 @@ import java.util.stream.Collectors;
 public class PetOwnerService {
 
     private final PetOwnerRepository petOwnerRepository;
+    private final PetOwnerConversor petOwnerConversor;
 
-    public PetOwnerService(PetOwnerRepository petOwnerRepository) {
+    public PetOwnerService(PetOwnerRepository petOwnerRepository, PetOwnerConversor petOwnerConversor) {
         this.petOwnerRepository = petOwnerRepository;
+        this.petOwnerConversor = petOwnerConversor;
     }
 
-    public PetOwnerDTO save(PetOwnerDTO petOwnerDTO) {
-        PetOwner owner = PetOwnerMapper.toEntity(petOwnerDTO);
+    public PetOwnerDTOResponse save(PetOwnerDTORequest petOwnerDTORequest) {
+        PetOwner owner = petOwnerConversor.requestToEntity(petOwnerDTORequest);
         PetOwner saved = petOwnerRepository.save(owner);
-        return PetOwnerMapper.toDTO(saved);
+        return petOwnerConversor.entityToResponse(saved);
     }
 
-    public Optional<PetOwnerDTO> findById(Long id) {
-        return petOwnerRepository.findById(id).map(PetOwnerMapper::toDTO);
+    public Optional<PetOwnerDTOResponse> findById(Long id) {
+        return petOwnerRepository.findById(id).map(petOwnerConversor::entityToResponse);
     }
 
-    public List<PetOwnerDTO> findAll() {
-        return petOwnerRepository.findAll().stream().map(PetOwnerMapper::toDTO).collect(Collectors.toList());
+    public List<PetOwnerDTOResponse> findAll() {
+        return petOwnerRepository.findAll().stream().map(petOwnerConversor::entityToResponse).collect(Collectors.toList());
     }
 
     public void deleteById(Long id) {

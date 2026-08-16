@@ -1,7 +1,8 @@
 package com.example.demo.service;
 
-import com.example.demo.dto.PetDTO;
-import com.example.demo.mapper.PetMapper;
+import com.example.demo.comunicacao.conversor.PetConversor;
+import com.example.demo.comunicacao.dto.request.PetDTORequest;
+import com.example.demo.comunicacao.dto.response.PetDTOResponse;
 import com.example.demo.model.Pet;
 import com.example.demo.model.PetOwner;
 import com.example.demo.repository.PetOwnerRepository;
@@ -17,29 +18,32 @@ public class PetService {
 
     private final PetRepository petRepository;
     private final PetOwnerRepository petOwnerRepository;
+    private final PetConversor petConversor;
 
-    public PetService(PetRepository petRepository, PetOwnerRepository petOwnerRepository) {
+    public PetService(PetRepository petRepository, PetOwnerRepository petOwnerRepository, PetConversor petConversor) {
         this.petRepository = petRepository;
         this.petOwnerRepository = petOwnerRepository;
+        this.petConversor = petConversor;
     }
 
-    public PetDTO save(PetDTO petDTO) {
+    public PetDTOResponse save(PetDTORequest petDTORequest) {
         PetOwner owner = null;
-        if (petDTO.getOwnerId() != null) {
-            owner = petOwnerRepository.findById(petDTO.getOwnerId())
-                    .orElseThrow(() -> new IllegalArgumentException("Owner not found: " + petDTO.getOwnerId()));
+        if (petDTORequest.ownerId() != null) {
+            owner = petOwnerRepository.findById(petDTORequest.ownerId())
+                    .orElseThrow(() -> new IllegalArgumentException("Owner not found: " + petDTORequest.ownerId()));
         }
-        Pet pet = PetMapper.toEntity(petDTO, owner);
+        Pet pet = petConversor.requestToEntity(petDTORequest);
+        pet.setOwner(owner);
         Pet saved = petRepository.save(pet);
-        return PetMapper.toDTO(saved);
+        return petConversor.entityToResponse(saved);
     }
 
-    public Optional<PetDTO> findById(Long id) {
-        return petRepository.findById(id).map(PetMapper::toDTO);
+    public Optional<PetDTOResponse> findById(Long id) {
+        return petRepository.findById(id).map(petConversor::entityToResponse);
     }
 
-    public List<PetDTO> findAll() {
-        return petRepository.findAll().stream().map(PetMapper::toDTO).collect(Collectors.toList());
+    public List<PetDTOResponse> findAll() {
+        return petRepository.findAll().stream().map(petConversor::entityToResponse).collect(Collectors.toList());
     }
 
     public void deleteById(Long id) {

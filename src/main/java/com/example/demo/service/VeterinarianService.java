@@ -1,7 +1,8 @@
 package com.example.demo.service;
 
-import com.example.demo.dto.VeterinarianDTO;
-import com.example.demo.mapper.VeterinarianMapper;
+import com.example.demo.comunicacao.conversor.VeterinarianConversor;
+import com.example.demo.comunicacao.dto.request.VeterinarianDTORequest;
+import com.example.demo.comunicacao.dto.response.VeterinarianDTOResponse;
 import com.example.demo.model.Veterinarian;
 import com.example.demo.repository.VeterinarianRepository;
 import org.springframework.stereotype.Service;
@@ -14,23 +15,25 @@ import java.util.stream.Collectors;
 public class VeterinarianService {
 
     private final VeterinarianRepository veterinarianRepository;
+    private final VeterinarianConversor veterinarianConversor;
 
-    public VeterinarianService(VeterinarianRepository veterinarianRepository) {
+    public VeterinarianService(VeterinarianRepository veterinarianRepository, VeterinarianConversor veterinarianConversor) {
         this.veterinarianRepository = veterinarianRepository;
+        this.veterinarianConversor = veterinarianConversor;
     }
 
-    public VeterinarianDTO save(VeterinarianDTO veterinarianDTO) {
-        Veterinarian veterinarian = VeterinarianMapper.toEntity(veterinarianDTO);
+    public VeterinarianDTOResponse save(VeterinarianDTORequest veterinarianDTORequest) {
+        Veterinarian veterinarian = veterinarianConversor.requestToEntity(veterinarianDTORequest);
         Veterinarian saved = veterinarianRepository.save(veterinarian);
-        return VeterinarianMapper.toDTO(saved);
+        return veterinarianConversor.entityToResponse(saved);
     }
 
-    public Optional<VeterinarianDTO> findById(Long id) {
-        return veterinarianRepository.findById(id).map(VeterinarianMapper::toDTO);
+    public Optional<VeterinarianDTOResponse> findById(Long id) {
+        return veterinarianRepository.findById(id).map(veterinarianConversor::entityToResponse);
     }
 
-    public List<VeterinarianDTO> findAll() {
-        return veterinarianRepository.findAll().stream().map(VeterinarianMapper::toDTO).collect(Collectors.toList());
+    public List<VeterinarianDTOResponse> findAll() {
+        return veterinarianRepository.findAll().stream().map(veterinarianConversor::entityToResponse).collect(Collectors.toList());
     }
 
     public void deleteById(Long id) {

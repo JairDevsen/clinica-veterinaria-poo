@@ -1,35 +1,28 @@
 package com.example.demo.mapper;
 
-import com.example.demo.dto.PetDTO;
-import com.example.demo.dto.PetOwnerDTO;
+import com.example.demo.comunicacao.dto.request.PetOwnerDTORequest;
+import com.example.demo.comunicacao.dto.response.PetOwnerDTOResponse;
 import com.example.demo.model.PetOwner;
-import com.example.demo.model.Pet;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class PetOwnerMapper {
 
-    public static PetOwnerDTO toDTO(PetOwner owner) {
+    public static PetOwnerDTOResponse toDTO(PetOwner owner) {
         if (owner == null) {
             return null;
         }
-        List<PetDTO> pets = owner.getPets().stream()
-                .map(PetMapper::toDTO)
+        List<Long> petIds = owner.getPets().stream()
+                .map(pet -> pet.getId())
                 .collect(Collectors.toList());
-        return new PetOwnerDTO(owner.getId(), owner.getFirstName(), owner.getLastName(), owner.getBirthDate(), owner.getCpf(), owner.getPhoneNumber(), owner.getEmail(), pets);
+        return new PetOwnerDTOResponse(owner.getId(), owner.getFirstName(), owner.getLastName(), owner.getBirthDate(), owner.getCpf(), owner.getPhoneNumber(), owner.getEmail(), petIds);
     }
 
-    public static PetOwner toEntity(PetOwnerDTO dto) {
+    public static PetOwner toEntity(PetOwnerDTORequest dto) {
         if (dto == null) {
             return null;
         }
-        PetOwner owner = new PetOwner(dto.getFirstName(), dto.getLastName(), dto.getBirthDate(), dto.getCpf(), dto.getPhoneNumber(), dto.getEmail());
-        owner.setId(dto.getId());
-        for (PetDTO petDTO : dto.getPets()) {
-            Pet pet = PetMapper.toEntity(petDTO, owner);
-            owner.addPet(pet);
-        }
-        return owner;
+        return new PetOwner(dto.firstName(), dto.lastName(), dto.birthDate(), dto.cpf(), dto.phoneNumber(), dto.email());
     }
 }
